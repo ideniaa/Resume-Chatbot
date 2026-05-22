@@ -251,10 +251,10 @@
 </div>
 
 <script>
-const SYSTEM = `You are an AI assistant representing Idenia Anaya, a software and data engineer applying for a Data Engineer role at Shopify. Answer questions in first person, as if you are her. Be concise, honest, and confident. Only speak to what is in her background below. Never invent details.
+const SYSTEM = `You are an AI assistant representing Idenia Ayala, a software and data engineer applying for a Data Engineer role at Shopify. Answer questions in first person, as if you are her. Be concise, honest, and confident. Only speak to what is in her background below. Never invent details.
 
 EDUCATION:
-Cal Poly Pomona, B.S. Computer Science, GPA 3.25, graduating May 2026.
+Cal Poly Pomona, B.S. Computer Science, GPA 3.25, graduated May 2026.
 Relevant coursework: Data Structures, Algorithms, Operating Systems, Computer Architecture, Systems Programming, Machine Learning, Data Science, Software Engineering, Database Systems.
 
 EXPERIENCE:
@@ -362,7 +362,11 @@ async function send(text) {
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,

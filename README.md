@@ -2,8 +2,6 @@
 
 An AI-powered page that lets anyone ask questions about my experience, projects, and skills — and get answers grounded in my actual background.
 
-Built for my Shopify Data Engineer application as a response to their optional "show us something you made with AI" prompt.
-
 ## What it does
 
 Opens a chat interface where the hiring manager (or anyone) can ask natural questions like:

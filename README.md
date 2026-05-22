@@ -13,6 +13,12 @@ Opens a chat interface where the hiring manager (or anyone) can ask natural ques
 
 The AI answers in first person, only drawing from my real background. It will not make things up.
 
+<img width="800" height="700" alt="Screenshot 2026-05-22 102155" src="https://github.com/user-attachments/assets/1d0a8dec-3735-40ae-b8b3-fd3b0593b00d" />
+<img width="800" height="700" alt="Screenshot 2026-05-22 102211" src="https://github.com/user-attachments/assets/b8067eb9-99e5-4815-af9c-69cf96679336" />
+<img width="800" height="700" alt="Screenshot 2026-05-22 102412" src="https://github.com/user-attachments/assets/a3fdf2a9-10df-4384-91ed-0a1fa7f3ff9e" />
+<img width="800" height="700" alt="Screenshot 2026-05-22 102425" src="https://github.com/user-attachments/assets/129f530d-a1b1-4c08-95bd-f66e1efa7b44" />
+
+
 ## How it works
 
 A single HTML file. No framework, no build step, no dependencies to install.

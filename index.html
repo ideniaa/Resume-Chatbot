@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat with Idenia's Background</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-secondary: #f7f7f5;
+      --border: rgba(0,0,0,0.12);
+      --border-hover: rgba(0,0,0,0.25);
+      --text: #1a1a1a;
+      --text-muted: #6b6b6b;
+      --accent: #1D9E75;
+      --accent-light: #E1F5EE;
+      --accent-text: #085041;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1a1a;
+        --bg-secondary: #242424;
+        --border: rgba(255,255,255,0.12);
+        --border-hover: rgba(255,255,255,0.25);
+        --text: #f0f0ee;
+        --text-muted: #999;
+        --accent-light: #04342C;
+        --accent-text: #9FE1CB;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-secondary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    #app {
+      width: 100%;
+      max-width: 640px;
+      background: var(--bg);
+      border-radius: var(--radius);
+      border: 0.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+      max-height: 720px;
+      overflow: hidden;
+    }
+
+    #header {
+      padding: 14px 18px;
+      border-bottom: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-secondary);
+      flex-shrink: 0;
+    }
+
+    #avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--accent-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    #header-text p:first-child {
+      font-size: 14px; font-weight: 500;
+      color: var(--text);
+    }
+    #header-text p:last-child {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+
+    .msg { display: flex; gap: 8px; max-width: 86%; }
+    .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+
+    .msg-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--accent-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 600;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .bubble {
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg-secondary);
+      border: 0.5px solid var(--border);
+    }
+
+    .msg.user .bubble {
+      background: var(--accent);
+      color: var(--accent-light);
+      border-color: transparent;
+    }
+
+    .typing { display: flex; gap: 4px; align-items: center; }
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      animation: blink 1.2s infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+
+    #chips {
+      padding: 8px 18px 10px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      border-top: 0.5px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .chip {
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 99px;
+      border: 0.5px solid var(--border-hover);
+      background: var(--bg);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .chip:hover {
+      background: var(--bg-secondary);
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    #input-row {
+      padding: 10px 18px 16px;
+      display: flex;
+      gap: 8px;
+      border-top: 0.5px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    #input-row input {
+      flex: 1;
+      font-size: 13.5px;
+      padding: 9px 13px;
+      border-radius: var(--radius-sm);
+      border: 0.5px solid var(--border-hover);
+      background: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    #input-row input:focus { border-color: var(--accent); }
+    #input-row input::placeholder { color: var(--text-muted); }
+
+    #send-btn {
+      width: 38px; height: 38px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: opacity 0.15s;
+    }
+    #send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    #send-btn svg { width: 16px; height: 16px; }
+
+    #error {
+      display: none;
+      padding: 8px 18px;
+      font-size: 12px;
+      color: #c0392b;
+      background: #fdf0ef;
+      border-top: 0.5px solid #f5c6c2;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <div id="header">
+    <div id="avatar">IA</div>
+    <div id="header-text">
+      <p>Chat with Idenia's background</p>
+      <p>Cal Poly Pomona &middot; CS 2026 &middot; Data Engineer candidate</p>
+    </div>
+  </div>
+
+  <div id="messages">
+    <div class="msg">
+      <div class="msg-avatar">IA</div>
+      <div class="bubble">Hi! I'm an AI trained on Idenia's background. Ask me about her projects, her pipeline work at Equatic, her Amazon internship, or why she's applying for this role.</div>
+    </div>
+  </div>
+
+  <div id="chips">
+    <button class="chip" onclick="send('What did she build at Amazon?')">Amazon internship</button>
+    <button class="chip" onclick="send('Tell me about the Equatic pipeline')">Equatic pipeline</button>
+    <button class="chip" onclick="send('Why does she want to work at Shopify?')">Why Shopify?</button>
+    <button class="chip" onclick="send('What are her strongest technical skills?')">Skills</button>
+    <button class="chip" onclick="send('What projects is she most proud of?')">Best projects</button>
+  </div>
+
+  <div id="error"></div>
+
+  <div id="input-row">
+    <input id="q" type="text" placeholder="Ask anything about Idenia..." autocomplete="off"
+      onkeydown="if(event.key==='Enter' && !event.shiftKey) { event.preventDefault(); sendFromInput(); }" />
+    <button id="send-btn" onclick="sendFromInput()" title="Send">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 13V3M3 8l5-5 5 5"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+const SYSTEM = `You are an AI assistant representing Idenia Anaya, a software and data engineer applying for a Data Engineer role at Shopify. Answer questions in first person, as if you are her. Be concise, honest, and confident. Only speak to what is in her background below. Never invent details.
+
+EDUCATION:
+Cal Poly Pomona, B.S. Computer Science, GPA 3.25, graduating May 2026.
+Relevant coursework: Data Structures, Algorithms, Operating Systems, Computer Architecture, Systems Programming, Machine Learning, Data Science, Software Engineering, Database Systems.
+
+EXPERIENCE:
+
+Equatic (carbon capture startup), Pilot Operations Support, February 2026 to April 2026.
+Built a real-time data pipeline integrating WinDAQ, Modbus TCP, and SQL Server to support continuous ingestion, transformation, and validation of voltage and titration data. Developed a Python and Flask dashboard to automate data collection, replace manual USB workflows, and enable live monitoring, logging, and export for engineering teams.
+
+CPP Ornamental Horticulture and Greenhouse, College Corps Fellow, August 2025 to January 2026.
+Greenhouse and nursery operations including plant care, irrigation systems, and plant labeling. Supported preparation of plants for retail at the campus farmers market.
+
+Amazon, Software Development Engineer Intern, June 2022 to August 2022.
+Authored a design document to accelerate AWS software release cycles, influencing implementation decisions. Developed Java APIs and a pipeline validation system to verify deployment eligibility and improve data integrity. Wrote unit tests using JUnit and Mockito. Worked in an Agile/Scrum team.
+
+Farmers Insurance, IT Finance Platform Support Intern, June 2021 to August 2021.
+Automated master data change request workflows by converting Excel processes into a QuickBase application. Partnered with stakeholders to gather requirements and iterate on improvements.
+
+PROJECTS:
+
+Carbon Capture Dashboard (github.com/ideniaa/Carbon-Capture-Dashboard):
+Full-stack lab operations dashboard for a carbon capture company. Integrates a Modbus titrator, WinDAQ voltage recorder, and WinCC SQL process historian into a shared Flask app used daily by the engineering team. Includes a fallback system that keeps the app functional when hardware or database connections drop.
+
+Thought Garden, Best UI/UX at hackathon, April 2025:
+Web app that visualizes user emotions as dynamic plant representations for mental wellness tracking. Built with HTML, CSS, and JavaScript using localStorage for offline persistence.
+
+Real-Time Hand Gesture Drawing and Classification System, February 2025:
+Computer vision app using MediaPipe and OpenCV to convert hand gestures into digital drawings. Custom CNN trained on the QuickDraw dataset for sketch classification. Demonstrated ML and computer vision concepts to high school students.
+
+SKILLS:
+Python (Pandas, NumPy, scikit-learn), SQL, Java, C++, R, Flask, REST APIs, Modbus TCP, MSSQL, Firebase/Firestore, Git, AWS, Jupyter Notebook, Matplotlib.
+
+WHY SHOPIFY:
+She wants to build the tools and frameworks that data workflows run on, not just the pipelines themselves. Her experience spans startup pipeline work at Equatic and big-tech backend at Amazon. Shopify sits at that intersection and offers the kind of large-scale, high-stakes commerce data problem she wants to tackle next. She is drawn to building internal infrastructure that other engineers depend on.
+
+Keep answers to 2 to 4 sentences unless a longer answer is clearly needed. Be direct and specific. Do not use em dashes.`;
+
+const history = [];
+const msgBox = document.getElementById('messages');
+const input = document.getElementById('q');
+const btn = document.getElementById('send-btn');
+const errorBar = document.getElementById('error');
+
+function scrollBottom() {
+  msgBox.scrollTop = msgBox.scrollHeight;
+}
+
+function addMsg(role, text) {
+  const wrap = document.createElement('div');
+  wrap.className = 'msg' + (role === 'user' ? ' user' : '');
+
+  if (role !== 'user') {
+    const av = document.createElement('div');
+    av.className = 'msg-avatar';
+    av.textContent = 'IA';
+    wrap.appendChild(av);
+  }
+
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  b.textContent = text;
+  wrap.appendChild(b);
+  msgBox.appendChild(wrap);
+  scrollBottom();
+  return b;
+}
+
+function showTyping() {
+  const wrap = document.createElement('div');
+  wrap.className = 'msg';
+  wrap.id = 'typing';
+  const av = document.createElement('div');
+  av.className = 'msg-avatar';
+  av.textContent = 'IA';
+  wrap.appendChild(av);
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  b.innerHTML = '<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  wrap.appendChild(b);
+  msgBox.appendChild(wrap);
+  scrollBottom();
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing');
+  if (t) t.remove();
+}
+
+function showError(msg) {
+  errorBar.textContent = msg;
+  errorBar.style.display = 'block';
+  setTimeout(() => errorBar.style.display = 'none', 4000);
+}
+
+async function send(text) {
+  text = text.trim();
+  if (!text) return;
+
+  btn.disabled = true;
+  input.value = '';
+  errorBar.style.display = 'none';
+
+  addMsg('user', text);
+  history.push({ role: 'user', content: text });
+  showTyping();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM,
+        messages: history
+      })
+    });
+
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+
+    const data = await res.json();
+    const reply = data.content?.find(b => b.type === 'text')?.text || 'Sorry, something went wrong.';
+
+    removeTyping();
+    addMsg('assistant', reply);
+    history.push({ role: 'assistant', content: reply });
+  } catch (e) {
+    removeTyping();
+    showError('Something went wrong. Check your connection and try again.');
+  }
+
+  btn.disabled = false;
+  input.focus();
+}
+
+function sendFromInput() {
+  send(input.value);
+}
+</script>
+
+</body>
+</html>
